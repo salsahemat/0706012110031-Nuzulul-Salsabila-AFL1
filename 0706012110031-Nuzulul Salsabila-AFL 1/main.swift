@@ -2,7 +2,7 @@
 //  0706012110031-Nuzulul Salsabila-AFL 1
 
 import Foundation
-var userinput = ""
+var userinput: String = ""
 var cafeteria = ["Tuku-Tuku","Gotri","Madam lie","Gisoe", "Kopte"]
 var menutukutuku = ["Tahu isi","Nasi Kuning","Nasi Campur","Air Mineral"]
 var hargatuku = [5000,20000,15000,40000]
@@ -15,6 +15,7 @@ var cartorder:[String] = []
 var totalbeli: Int = 0
 var harga: Int = 0
 var totalharga: Int = 0
+let milih = Int(userinput) ?? 0
 
 func mainScreen(){
         print("\nWelcome to UC-Walk Foodcourt👨🏻‍🍳👨🏻‍🍳 \n" + "Please choose cafeteria: \n")
@@ -26,7 +27,7 @@ func mainScreen(){
         print("[S] Shopping Cart")
         print("[Q] Quit")
         print("Your Choice?",terminator: " ")
-        userinput = readLine()!.lowercased().uppercased()
+        userinput = readLine()!.uppercased()
         
         switch userinput{
         case "1":
@@ -44,10 +45,10 @@ func mainScreen(){
         case "5":
             menuKopte()
             
-        case "s":
+        case "S":
+            shoppingcart()
         break
-            
-        case "6":
+        case "Q":
             exit(0)
         default:
             mainScreen()
@@ -55,7 +56,7 @@ func mainScreen(){
     }
 
 
-func menuTukuTuku(){
+func menuTukuTuku() {
     print("""
     \nHi, Welcome back to Tuku-Tuku!
     What would you like to order?
@@ -66,76 +67,117 @@ func menuTukuTuku(){
     -
     [B]ack to Main Menu
     Your Menu Choice?
-    """,terminator: " ")
-    userinput = readLine()!.lowercased().uppercased()
-    
-    switch userinput{
-    case "1":
-        let milih = Int(userinput) ?? 0
-        print("\(menutukutuku[milih-1]) @ \(hargatuku[milih-1]) \nThank you for ordering")
-        cartorder.append("\(menutukutuku) x\(totalbeli)")
-        saveorder.append("Tuku-Tuku")
-        
-        harga = hargatuku[0] * (Int(totalbeli))
-        totalharga += harga
+    """, terminator: " ")
+    userinput = readLine()!.lowercased()
+
+    switch userinput {
+    case "1"..."4":
+        guard let index = Int(userinput) else {
+            print("Invalid input")
+            menuTukuTuku()
+            return
+        }
+        let menuItem = menutukutuku[index - 1]
+        let itemPrice = hargatuku[index - 1]
+
+        orderScreen(menuItem: menuItem, itemPrice: itemPrice) // panggil fungsi orderScreen() dengan argumen index
+//
+//        print("\(menuItem) @ \(itemPrice) \nThank you for ordering")
+//        cartorder.append("\(menuItem) x \(totalbeli)")
+//        saveorder.append("Tuku-Tuku")
+//
+//        let harga = itemPrice * totalbeli
+//        totalharga += harga
         menuTukuTuku()
-        break
-    case "2":
-        let milih = Int(userinput) ?? 0
-        print("\(menutukutuku[milih-1]) @ \(hargatuku[milih-1]) \nThank you for ordering")
-        cartorder.append("\(menutukutuku) x\(totalbeli)")
-        saveorder.append("Tuku-Tuku")
-        
-        harga = hargatuku[0] * (Int(totalbeli))
-        
-        totalharga += harga
-        menuTukuTuku()
-        break
-    case "3":
-        let milih = Int(userinput) ?? 0
-        print("\(menutukutuku[milih-1]) @ \(hargatuku[milih-1]) \nThank you for ordering")
-        cartorder.append("\(menutukutuku) x\(totalbeli)")
-        saveorder.append("Tuku-Tuku")
-        
-        harga = hargatuku[0] * (Int(totalbeli))
-        
-        totalharga += harga
-        menuTukuTuku()
-        break
-    case "4":
-        let milih = Int(userinput) ?? 0
-        print("\(menutukutuku[milih-1]) @ \(hargatuku[milih-1]) \nThank you for ordering")
-        cartorder.append("\(menutukutuku) x\(totalbeli)")
-        saveorder.append("Tuku-Tuku")
-        
-        harga = hargatuku[0] * (Int(totalbeli))
-        
-        totalharga += harga
-        menuTukuTuku()
-        break
-    case "5":
-        let milih = Int(userinput) ?? 0
-        print("\(menutukutuku[milih-1]) @ \(hargatuku[milih-1]) \nThank you for ordering")
-        cartorder.append("\(menutukutuku) x\(totalbeli)")
-        saveorder.append("Tuku-Tuku")
-        
-        harga = hargatuku[0] * (Int(totalbeli))
-        
-        totalharga += harga
-        menuTukuTuku()
-        break
     case "b":
         mainScreen()
-        break
     default:
-       mainScreen()
+        print("Invalid input")
+        menuTukuTuku()
+    }
+}
+
+
+
+func orderScreen(menuItem: String, itemPrice: Int) {
+    print("How many \(menuItem) do you want to buy? ", terminator: " ")
+    guard let input = readLine(), let inputTotalbeli = Int(input), inputTotalbeli > 0 else {
+        print("Invalid input")
+        orderScreen(menuItem: menuItem, itemPrice: itemPrice)
+        return
+    }
+    totalbeli = inputTotalbeli
+    print("You have ordered \(totalbeli) \(menuItem) @ \(itemPrice) each")
+    let harga = itemPrice * totalbeli
+    totalharga += harga
+    cartorder.append("\(menuItem) x \(totalbeli)")
+    saveorder.append("Tuku-Tuku")
+    print("Thank you for ordering")
+}
+
+
+
+func shoppingcart(){
+    if cartorder.isEmpty{
+        print("Your cart is empty.")
+    }
+    else{
+        for(index, shopcart) in saveorder.enumerated(){
+            print("Your order from \(shopcart) :")
+            print("- \(cartorder[index])")
+        }
+        print("""
+              Press [B] to go back
+              Press [P] to pay / checkout
+              Your choice?
+              """, terminator: " ")
+        userinput = readLine()!.lowercased()
+        
+        print()
+        
+        switch userinput{
+        case "b" :
+            mainScreen()
+            
+        case "p" :
+           checkout()
+            
+        default :
+            shoppingcart()
+        }
     }
 
 }
 
-func shoppingcart(){
+func checkout() {
+    print("""
+    \nCheckout Screen
+    Total order: \(totalharga)
+    Input your payment amount:
+    """, terminator: " ")
+
+    guard let input = readLine(), let payment = Int(input), payment >= totalharga, payment > 0 else {
+        print("Invalid input, please try again")
+        checkout()
+        return
+    }
+
+    let change = payment - totalharga
+    print("""
+    Total Payment: \(payment)
+    Change: \(change)
+    Thank you for your purchase!
+    enjoy your meals!
+    Press [return] to go back to main screen👋🏼:
+    """)
+    _ = readLine()
+    mainScreen()
     
+    // Reset totalharga
+    totalharga = 0
 }
+
+
 
 func menuGotri(){
     print("""
