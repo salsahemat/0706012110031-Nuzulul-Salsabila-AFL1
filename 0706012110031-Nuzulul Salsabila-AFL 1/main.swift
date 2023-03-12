@@ -3,30 +3,46 @@
 
 import Foundation
 var userinput: String = ""
-var cafeteria = ["Tuku-Tuku","Gotri","Madam lie","Gisoe", "Kopte"]
-var menutukutuku = ["Tahu isi","Nasi Kuning","Nasi Campur","Air Mineral"]
-var hargatuku = [5000,20000,15000,4000]
-var menugotri = ["Nasi goreng","Mie goreng","Pangsit Goreng","Es teh"]
-var hargagotri = [25000,20000,18000,5000]
-var menumadamlie = ["Nasi Ayam geprek","Nasi ayam sayur","Mie Kuah","Es jeruk"]
-var hargamadamlie = [25000,23000,19000,8000]
-var menugisoe = ["Ice Americano","Vanilla latte","Creamy Klepon","Donut"]
-var hargagisoe = [24000,27000,28000,15000]
-var menukopte = ["Kopi tarik kopte","Teh Kundur","Teh tarik kopte","Milo Dinosaur🦖"]
-var hargakopte = [15000,16000,15000,16000]
-var item_tukutuku: [String] = []
-var item_gotri: [String] = []
-var item_madamlie: [String] = []
-var item_gisoe: [String] = []
-var item_kopte: [String] = []
+var cafeteria = [
+    "Tuku-Tuku": [
+        "Tahu isi": 5000,
+        "Nasi Kuning": 20000,
+        "Nasi Campur": 15000,
+        "Air Mineral": 4000
+    ],
+    "Gotri": [
+        "Nasi goreng": 25000,
+        "Mie goreng": 20000,
+        "Pangsit Goreng": 18000,
+        "Es teh": 5000
+    ],
+    "Madam lie": [
+        "Nasi Ayam Geprek": 25000,
+        "Nasi Ayam Sayur": 23000,
+        "Mie Kuah": 19000,
+        "Es jeruk": 8000
+    ],
+    "Gisoe": [
+        "Ice Americano": 24000,
+        "Vanilla Latte": 27000,
+        "Creamy Klepon": 28000,
+        "Donut": 15000
+    ],
+    "Kopte": [
+        "Kopi Tarik Kopte": 15000,
+        "Teh Kundur": 16000,
+        "Teh Tarik Kopte": 15000,
+        "Milo Dinosaur🦖": 16000
+    ]
+]
+
 var saveorder: [String] = []
-var cartorder:[String] = []
+var cartorder = [String: Int]()
 var totalbeli: Int = 0
 var harga: Int = 0
 var totalharga: Int = 0
 let milih = Int(userinput) ?? 0
 var totalPesanan = 0
-var dupe = false
 
 func mainScreen(){
         print("\nWelcome to UC-Walk Foodcourt👨🏻‍🍳👨🏻‍🍳 \n" + "Please choose cafeteria: \n")
@@ -64,7 +80,7 @@ func mainScreen(){
 
 func orderScreen(menuItem: String, itemPrice: Int, cafeteriaName: String) {
     print("How many \(menuItem) do you want to buy? ", terminator: " ")
-    guard let input = readLine(), let inputTotalbeli = Int(input), inputTotalbeli > 0 else {
+    guard let input = readLine(), let inputTotalbeli = Int(input.trimmingCharacters(in: .whitespaces)), inputTotalbeli > 0 else {
         print("Invalid input")
         orderScreen(menuItem: menuItem, itemPrice: itemPrice, cafeteriaName: cafeteriaName)
         return
@@ -73,14 +89,17 @@ func orderScreen(menuItem: String, itemPrice: Int, cafeteriaName: String) {
     print("You have ordered \(totalbeli) \(menuItem) @ \(itemPrice) each from \(cafeteriaName)")
     let harga = itemPrice * totalbeli
     totalharga += harga
-    cartorder.append("\(menuItem) x \(totalbeli)")
-    saveorder.append(cafeteriaName)
-    totalPesanan += totalbeli // menambahkan pesanan baru ke totalPesanan
+    if let existingOrder = cartorder[menuItem] {
+        cartorder[menuItem] = existingOrder + totalbeli  // jika item sudah ada di keranjang belanja, tambahkan jumlah pesanan baru ke dalam item yang sudah ada
+    } else {
+        cartorder[menuItem] = totalbeli  // jika item belum ada di keranjang belanja, tambahkan item baru ke dalam keranjang belanja
+    }
+    if !saveorder.contains(cafeteriaName) {  // tambahkan nama toko ke dalam saveorder jika belum ada
+        saveorder.append(cafeteriaName)
+    }
+    totalPesanan += totalbeli
     print("Thank you for ordering")
 }
-
-
-
 
 func shoppingcart() {
     if cartorder.isEmpty {
@@ -98,15 +117,23 @@ func shoppingcart() {
             shoppingcart()
         }
     } else {
-        if cartorder.count == saveorder.count {
-            for (index, shopcart) in saveorder.enumerated() {
-                print("Your order from \(shopcart):")
-                print("- \(cartorder[index])")
+        for shopcart in saveorder {
+            print("Your order from \(shopcart):")
+            var foundItems = false
+            if let restaurant = cafeteria[shopcart] {
+                for (item, qty) in cartorder {
+                    if let price = restaurant[item] {
+                        print("- \(item) x \(qty) @ \(price)")
+                        foundItems = true
+                    }
+                }
             }
-        } else {
-            print("Error: Your cart and saved order don't match.")
+            if !foundItems {
+                print("You don't have any order from \(shopcart)")
+            }
         }
-        
+
+
         print("""
               Press [B] to go back
               Press [P] to pay / checkout
@@ -131,12 +158,15 @@ func shoppingcart() {
     }
 }
 
+func emptyCart() {
+    cartorder.removeAll()
+    totalharga = 0
+}
 
 func checkout() {
     print("""
     \nCheckout Screen
-    Total order: \(totalharga)
-    Total Items: \(totalbeli)
+    \nTotal order: \(totalharga)
     Enter the amount of your money:
     """, terminator: " ")
 
@@ -162,11 +192,16 @@ func checkout() {
         }
         let change = payment - totalharga
         print("""
-        Total Payment: \(payment)
+        You pay: \(payment)
         Change: \(change)
         Thank you for your purchase!
-        """)
-        exit(0)
+        Enjoy your meals!
+        
+        \nPress [return] to go back to main screen:
+        """,terminator: " ")
+        userinput = readLine()!.uppercased()
+        emptyCart()
+       mainScreen()
     } else {
         print("Please enter a valid amount.")
         checkout()
@@ -179,14 +214,15 @@ func checkout() {
 
 //TUKU-TUKU
 func menuTukuTuku() {
-    var check = false
     print("""
     \nHi, Welcome back to Tuku-Tuku!
     What would you like to order?
     """)
     
-    for (index, menu) in menutukutuku.enumerated() {
-        print("[\(index+1)] \(menu)")
+    for (index, menu) in cafeteria["Tuku-Tuku"]!.enumerated() {
+        let menuItem = menu.key
+        let itemPrice = menu.value
+        print("[\(index+1)] \(menuItem)")
     }
    print("""
     -
@@ -197,13 +233,13 @@ func menuTukuTuku() {
 
     switch userinput {
     case "1"..."4":
-        guard let index = Int(userinput), index <= menutukutuku.count else {
+        guard let index = Int(userinput), index <= cafeteria["Tuku-Tuku"]!.count else {            print("Invalid input")
             print("Invalid input")
             menuTukuTuku()
             return
         }
-        let menuItem = menutukutuku[index - 1]
-        let itemPrice = hargatuku[index - 1]
+        let menuItem = Array(cafeteria["Tuku-Tuku"]!.keys)[index - 1]
+        let itemPrice = Array(cafeteria["Tuku-Tuku"]!.values)[index - 1]
         print("\n\(menuItem) @ \(itemPrice)")
         orderScreen(menuItem: menuItem, itemPrice: itemPrice, cafeteriaName: "Tuku-Tuku")
         menuTukuTuku()
@@ -225,10 +261,11 @@ func menuGotri() {
         What would you like to order?
         """)
     
-    for (index, menu) in menugotri.enumerated() {
-        print("[\(index+1)] \(menu)")
+    for (index, menu) in cafeteria["Gotri"]!.enumerated() {
+        let menuItem = menu.key
+        let itemPrice = menu.value
+        print("[\(index+1)] \(menuItem)")
     }
-    
     print("""
         -
         [B]ack to Main Menu
@@ -238,13 +275,13 @@ func menuGotri() {
     
     switch userinput {
     case "1"..."4":
-        guard let index = Int(userinput), index <= menugotri.count else {
+        guard let index = Int(userinput), index <= cafeteria["Gotri"]!.count else {
             print("Invalid input")
             menuGotri()
             return
         }
-        let menuItem = menugotri[index - 1]
-        let itemPrice = hargagotri[index - 1]
+        let menuItem = Array(cafeteria["Gotri"]!.keys)[index - 1]
+        let itemPrice = Array(cafeteria["Gotri"]!.values)[index - 1]
 
         orderScreen(menuItem: menuItem, itemPrice: itemPrice, cafeteriaName: "Gotri")
 
@@ -264,8 +301,11 @@ func menuMadamLie(){
     \nHi, Welcome back to Madam Lie!
     What would you like to order?
    """)
-    for (index, menu) in menumadamlie.enumerated() {
-        print("[\(index+1)] \(menu)")
+    
+    for (index, menu) in cafeteria["Madam lie"]!.enumerated() {
+        let menuItem = menu.key
+        let itemPrice = menu.value
+        print("[\(index+1)] \(menuItem)")
     }
     print("""
     -
@@ -276,15 +316,15 @@ func menuMadamLie(){
     
     switch userinput {
     case "1"..."4":
-        guard let index = Int(userinput), index <= menumadamlie.count else {
+        guard let index = Int(userinput), index <= cafeteria["Madam lie"]!.count else {
             print("Invalid input")
             menuMadamLie()
             return
         }
-        let menuItem = menumadamlie[index - 1]
-        let itemPrice = hargamadamlie[index - 1]
+        let menuItem = Array(cafeteria["Madam lie"]!.keys)[index - 1]
+        let itemPrice = Array(cafeteria["Madam lie"]!.values)[index - 1]
 
-        orderScreen(menuItem: menuItem, itemPrice: itemPrice, cafeteriaName: "Madam Lie") // panggil fungsi orderScreen() dengan argumen index
+        orderScreen(menuItem: menuItem, itemPrice: itemPrice, cafeteriaName: "Madam lie") // panggil fungsi orderScreen() dengan argumen index
 
         menuMadamLie()
     case "b":
@@ -301,8 +341,10 @@ func menuGisoe(){
     What would you like to order?
    """)
     
-    for (index, menu) in menugisoe.enumerated() {
-        print("[\(index+1)] \(menu)")
+    for (index, menu) in cafeteria["Gisoe"]!.enumerated() {
+        let menuItem = menu.key
+        let itemPrice = menu.value
+        print("[\(index+1)] \(menuItem)")
     }
     
     print("""
@@ -314,13 +356,13 @@ func menuGisoe(){
     
     switch userinput {
     case "1"..."4":
-        guard let index = Int(userinput), index <= menugisoe.count else {
+        guard let index = Int(userinput), index <= cafeteria["Gisoe"]!.count else {
             print("Invalid input")
             menuGisoe()
             return
         }
-        let menuItem = menugisoe[index - 1]
-        let itemPrice = hargagisoe[index - 1]
+        let menuItem = Array(cafeteria["Gisoe"]!.keys)[index - 1]
+        let itemPrice = Array(cafeteria["Gisoe"]!.values)[index - 1]
 
         orderScreen(menuItem: menuItem, itemPrice: itemPrice, cafeteriaName: "Gisoe") // panggil fungsi orderScreen() dengan argumen index
 
@@ -333,14 +375,16 @@ func menuGisoe(){
     }
 }
 
-func menuKopte(){
+func menuKopte() {
     print("""
     \nHi, Welcome to Kopte Cafe!
     What would you like to order?
    """)
     
-    for (index, menu) in menukopte.enumerated() {
-        print("[\(index+1)] \(menu)")
+    for (index, menu) in cafeteria["Kopte"]!.enumerated() {
+        let menuItem = menu.key
+        let itemPrice = menu.value
+        print("[\(index+1)] \(menuItem)")
     }
     
     print("""
@@ -352,13 +396,13 @@ func menuKopte(){
     
     switch userinput {
     case "1"..."4":
-        guard let index = Int(userinput), index <= menukopte.count else {
+        guard let index = Int(userinput), index <= cafeteria["Kopte"]!.count else {
             print("Invalid input")
             menuKopte()
             return
         }
-        let menuItem = menukopte[index - 1]
-        let itemPrice = hargakopte[index - 1]
+        let menuItem = Array(cafeteria["Kopte"]!.keys)[index - 1]
+        let itemPrice = Array(cafeteria["Kopte"]!.values)[index - 1]
 
         orderScreen(menuItem: menuItem, itemPrice: itemPrice, cafeteriaName: "Kopte") // panggil fungsi orderScreen() dengan argumen index
 
