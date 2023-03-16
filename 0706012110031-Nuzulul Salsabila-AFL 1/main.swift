@@ -41,7 +41,6 @@ var cartorder = [String: Int]()
 var totalbeli: Int = 0
 var harga: Int = 0
 var totalharga: Int = 0
-let milih = Int(userinput) ?? 0
 var totalPesanan = 0
 
 func mainScreen(){
@@ -86,7 +85,6 @@ func orderScreen(menuItem: String, itemPrice: Int, cafeteriaName: String) {
         return
     }
     totalbeli = inputTotalbeli
-    print("You have ordered \(totalbeli) \(menuItem) @ \(itemPrice) each from \(cafeteriaName)")
     let harga = itemPrice * totalbeli
     totalharga += harga
     if let existingOrder = cartorder[menuItem] {
@@ -122,8 +120,8 @@ func shoppingcart() {
             var foundItems = false
             if let restaurant = cafeteria[shopcart] {
                 for (item, qty) in cartorder {
-                    if let price = restaurant[item] {
-                        print("- \(item) x \(qty) @ \(price)")
+                    if restaurant[item] != nil {
+                        print("- \(item) x \(qty)")
                         foundItems = true
                     }
                 }
@@ -132,10 +130,8 @@ func shoppingcart() {
                 print("You don't have any order from \(shopcart)")
             }
         }
-
-
         print("""
-              Press [B] to go back
+              \nPress [B] to go back
               Press [P] to pay / checkout
               Press [C] to cancel your order
               Your choice?
@@ -163,49 +159,49 @@ func emptyCart() {
     totalharga = 0
 }
 
+
 func checkout() {
-    print("""
-    \nCheckout Screen
-    \nTotal order: \(totalharga)
-    Enter the amount of your money:
-    """, terminator: " ")
+    print("Checkout Screen\n")
+    print("Your total order: \(totalharga)")
+    while true {
+        print("Enter the amount of your money:", terminator: " ")
 
-    guard let input = readLine() else {
-        print("Please enter your payment.")
-        checkout()
-        return
-    }
-
-    if let payment = Int(input) {
-        if payment == 0 {
-            print("Payment can't be zero.")
-            checkout()
-            return
-        } else if payment < 0 {
-            print("Please enter a valid amount.")
-            checkout()
-            return
-        } else if payment < totalharga {
-            print("Please enter a valid amount.")
-            checkout()
-            return
+        guard let input = readLine() else {
+            print("Please enter your payment.\n")
+            continue
         }
-        let change = payment - totalharga
-        print("""
-        You pay: \(payment)
-        Change: \(change)
-        Thank you for your purchase!
-        Enjoy your meals!
-        
-        \nPress [return] to go back to main screen:
-        """,terminator: " ")
-        userinput = readLine()!.uppercased()
-        emptyCart()
-       mainScreen()
-    } else {
-        print("Please enter a valid amount.")
-        checkout()
-        return
+
+        if let payment = Int(input) {
+            if payment == 0 {
+                print("Payment can't be zero.\n")
+                continue
+            } else if payment < 0 {
+                print("Please enter a valid amount.\n")
+                continue
+            } else if payment < totalharga {
+                print("Please enter a valid amount.\n")
+                continue
+            }
+
+            let change = payment - totalharga
+            print("""
+            Your total order: \(totalharga)
+            You pay: \(payment)
+            Change: \(change)
+            \nEnjoy your meals!
+
+            Press [return] to go back to main screen:
+            """, terminator: " ")
+            userinput = readLine()!.uppercased()
+            emptyCart()
+            mainScreen()
+
+            // keluar dari loop while
+            break
+        } else {
+            print("Please enter a valid amount.")
+            continue
+        }
     }
 }
 
@@ -221,7 +217,6 @@ func menuTukuTuku() {
     
     for (index, menu) in cafeteria["Tuku-Tuku"]!.enumerated() {
         let menuItem = menu.key
-        let itemPrice = menu.value
         print("[\(index+1)] \(menuItem)")
     }
    print("""
@@ -233,7 +228,8 @@ func menuTukuTuku() {
 
     switch userinput {
     case "1"..."4":
-        guard let index = Int(userinput), index <= cafeteria["Tuku-Tuku"]!.count else {            print("Invalid input")
+        guard let index = Int(userinput), index <= cafeteria["Tuku-Tuku"]!.count else {
+            print("Invalid input")
             print("Invalid input")
             menuTukuTuku()
             return
@@ -251,9 +247,6 @@ func menuTukuTuku() {
     }
 }
 
-
-
-
 //GOTRI
 func menuGotri() {
     print("""
@@ -263,7 +256,7 @@ func menuGotri() {
     
     for (index, menu) in cafeteria["Gotri"]!.enumerated() {
         let menuItem = menu.key
-        let itemPrice = menu.value
+//        let itemPrice = menu.value
         print("[\(index+1)] \(menuItem)")
     }
     print("""
@@ -294,7 +287,6 @@ func menuGotri() {
     }
 }
 
-
 //MADAM LIE
 func menuMadamLie(){
     print("""
@@ -304,7 +296,7 @@ func menuMadamLie(){
     
     for (index, menu) in cafeteria["Madam lie"]!.enumerated() {
         let menuItem = menu.key
-        let itemPrice = menu.value
+//        let itemPrice = menu.value
         print("[\(index+1)] \(menuItem)")
     }
     print("""
@@ -343,7 +335,7 @@ func menuGisoe(){
     
     for (index, menu) in cafeteria["Gisoe"]!.enumerated() {
         let menuItem = menu.key
-        let itemPrice = menu.value
+//        let itemPrice = menu.value
         print("[\(index+1)] \(menuItem)")
     }
     
@@ -383,7 +375,7 @@ func menuKopte() {
     
     for (index, menu) in cafeteria["Kopte"]!.enumerated() {
         let menuItem = menu.key
-        let itemPrice = menu.value
+//        let itemPrice = menu.value
         print("[\(index+1)] \(menuItem)")
     }
     
