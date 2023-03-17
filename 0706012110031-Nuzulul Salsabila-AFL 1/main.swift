@@ -3,7 +3,7 @@
 
 import Foundation
 var userinput: String = ""
-var cafeteria = [
+var cafeteria = [ //membuat dictionary dengan key nama cafeteria valuenya itu dictionary kecil yang memiliki key menu dari resto dengan value harga dari resto
     "Tuku-Tuku": [
         "Tahu isi": 5000,
         "Nasi Kuning": 20000,
@@ -79,8 +79,8 @@ func mainScreen(){
 
 func orderScreen(menuItem: String, itemPrice: Int, cafeteriaName: String) {
     print("How many \(menuItem) do you want to buy? ", terminator: " ")
-    guard let input = readLine(), let inputTotalbeli = Int(input.trimmingCharacters(in: .whitespaces)), inputTotalbeli > 0 else {
-        print("Invalid input")
+    guard let input = readLine(), let inputTotalbeli = Int(input.trimmingCharacters(in: .whitespaces)), inputTotalbeli > 0 else { // 
+        print("Invalid input") // guard memastikan input selau angka positif
         orderScreen(menuItem: menuItem, itemPrice: itemPrice, cafeteriaName: cafeteriaName)
         return
     }
