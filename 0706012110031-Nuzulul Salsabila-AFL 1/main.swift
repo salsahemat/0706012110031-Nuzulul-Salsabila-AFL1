@@ -3,7 +3,8 @@
 
 import Foundation
 var userinput: String = ""
-var cafeteria = [ //membuat dictionary dengan key nama cafeteria valuenya itu dictionary kecil yang memiliki key menu dari resto dengan value harga dari resto
+var cafeteria = [
+    //membuat dictionary dengan key nama cafeteria valuenya itu dictionary kecil yang memiliki key menu dari resto dengan value harga dari resto
     "Tuku-Tuku": [
         "Tahu isi": 5000,
         "Nasi Kuning": 20000,
@@ -35,14 +36,21 @@ var cafeteria = [ //membuat dictionary dengan key nama cafeteria valuenya itu di
         "Milo Dinosaur🦖": 16000
     ]
 ]
-
+//ini variabel untuk menyimpan orderan user
 var saveorder: [String] = []
+// variabel untuk orderan user masuk ke dalam shopping cart dengan menggunakan array dictionary yang key nya itu string dengan value nya integer
 var cartorder = [String: Int]()
+// variabel total beli dengan tipe int yang diinisialisasi diawal dengan nilai 0
 var totalbeli: Int = 0
+//variabel harga dengan tipe int yang diinisialisasi diawal dengan nilai 0
 var harga: Int = 0
+//variabel total harga dengan tipe int yang diinisialisasi diawal dengan nilai 0
 var totalharga: Int = 0
+// variabel total pesanan  dengan tipe int yang diinisialisasi diawal dengan nilai 0
 var totalPesanan = 0
 
+
+//function main screen yang menampilkan awal program nya yang berisi menu tuku-tuku, gotri, madam lie, gisoe, kopte, isi dari shopping cart dan quit
 func mainScreen(){
         print("\nWelcome to UC-Walk Foodcourt👨🏻‍🍳👨🏻‍🍳 \n" + "Please choose cafeteria: \n")
         print("[1] Tuku-Tuku")
@@ -76,14 +84,15 @@ func mainScreen(){
         }
     }
 
-
+//function order screen yang mengambil pesanan dari pelanggan dengan parameter berupa menuItem (nama menu yang dipesan), itemPrice (harga per item), dan cafeteriaName (nama kantin/tempat makan). Fungsi ini berisi beberapa langkah untuk memproses pesanan dari inputan user
 func orderScreen(menuItem: String, itemPrice: Int, cafeteriaName: String) {
     print("How many \(menuItem) do you want to buy? ", terminator: " ")
-    guard let input = readLine(), let inputTotalbeli = Int(input.trimmingCharacters(in: .whitespaces)), inputTotalbeli > 0 else { // 
+    guard let input = readLine(), let inputTotalbeli = Int(input.trimmingCharacters(in: .whitespaces)), inputTotalbeli > 0 else { // untuk memeriksa apakah nilai inputTotalbeli tidak nil dan apakah inputTotalbeli lebih besar dari 0.
         print("Invalid input") // guard memastikan input selau angka positif
         orderScreen(menuItem: menuItem, itemPrice: itemPrice, cafeteriaName: cafeteriaName)
         return
     }
+    //perhitungan harganya
     totalbeli = inputTotalbeli
     let harga = itemPrice * totalbeli
     totalharga += harga
@@ -99,7 +108,9 @@ func orderScreen(menuItem: String, itemPrice: Int, cafeteriaName: String) {
     print("Thank you for ordering")
 }
 
+//function yang menampilkan keranjang belanja pengguna, yang berisi daftar item yang telah dipesan dan jumlah masing-masing item.
 func shoppingcart() {
+    //Jika keranjang kosong, fungsi akan meminta pengguna untuk kembali ke menu utama atau melanjutkan berbelanja. Jika ada item dalam keranjang, fungsi akan menampilkan item dan jumlahnya dengan mengulang di atas kamus cartorder.
     if cartorder.isEmpty {
         print("Your cart is empty.")
         print("""
@@ -154,14 +165,16 @@ func shoppingcart() {
     }
 }
 
+
 func emptyCart() {
     cartorder.removeAll()
     totalharga = 0
 }
 
-
+//function untuk melakukan proses checkout, yaitu menghitung total harga pesanan dan meminta pembayaran dari pengguna.
 func checkout() {
     print("Checkout Screen\n")
+    //menampilkan total harga pesanan yang dihitung dari variabel totalharga.
     print("Your total order: \(totalharga)")
     while true {
         print("Enter the amount of your money:", terminator: " ")
@@ -170,7 +183,7 @@ func checkout() {
             print("Please enter your payment.\n")
             continue
         }
-
+       // Jika input yang dimasukkan pengguna valid, yaitu berupa angka, maka function akan melakukan pengecekan terhadap nilai pembayaran yang dimasukkan. Jika pembayaran sama dengan nol, kurang dari nol, atau kurang dari total harga pesanan, maka function akan mencetak pesan error dan meminta pengguna untuk memasukkan ulang pembayarannya.
         if let payment = Int(input) {
             if payment == 0 {
                 print("Payment can't be zero.\n")
