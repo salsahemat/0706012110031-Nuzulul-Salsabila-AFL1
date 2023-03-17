@@ -38,15 +38,10 @@ var cafeteria = [
 ]
 //ini variabel untuk menyimpan orderan user
 var saveorder: [String] = []
-// variabel untuk orderan user masuk ke dalam shopping cart dengan menggunakan array dictionary yang key nya itu string dengan value nya integer
 var cartorder = [String: Int]()
-// variabel total beli dengan tipe int yang diinisialisasi diawal dengan nilai 0
 var totalbeli: Int = 0
-//variabel harga dengan tipe int yang diinisialisasi diawal dengan nilai 0
 var harga: Int = 0
-//variabel total harga dengan tipe int yang diinisialisasi diawal dengan nilai 0
 var totalharga: Int = 0
-// variabel total pesanan  dengan tipe int yang diinisialisasi diawal dengan nilai 0
 var totalPesanan = 0
 
 
