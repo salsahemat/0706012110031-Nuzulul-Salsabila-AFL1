@@ -6,6 +6,8 @@
 //
 
 import Foundation
+
+//merepresentasikan sebuah item yang ada di keranjang belanja.
 class CartItem {
     var menuItem: String
     var itemPrice: Int
@@ -19,6 +21,7 @@ class CartItem {
         self.restaurant = restaurant
     }
     
+    //menghitung total harga item berdasarkan harga per unit dan jumlah yang dibeli.
     func calculatePrice() -> Int {
         return itemPrice * totalbeli
     }

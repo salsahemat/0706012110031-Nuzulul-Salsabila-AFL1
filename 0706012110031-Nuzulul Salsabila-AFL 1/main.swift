@@ -6,6 +6,7 @@
 import Foundation
 
 class Main {
+    //cafeterias merupakan array dari objek Cafeteria, di mana setiap objek Cafeteria memiliki sebuah dictionary sebagai atribut menu-nya.
     var cafeterias = [
         Cafeteria(name: "Tuku-Tuku", menu: ["Tahu isi": 5000, "Nasi Kuning": 20000, "Nasi Campur": 15000,"Air Mineral": 4000]),
         Cafeteria(name: "Gotri", menu: ["Nasi goreng": 25000, "Mie goreng": 20000, "Pangsit Goreng": 18000,"Es teh": 5000]),
@@ -13,15 +14,17 @@ class Main {
         Cafeteria(name: "Gisoe", menu: ["Ice Americano": 24000,"Vanilla Latte": 27000,"Creamy Klepon": 28000,"Donut": 15000]),
         Cafeteria(name: "Kopte", menu: ["Kopi Tarik Kopte": 15000,"Teh Kundur": 16000,"Teh Tarik Kopte": 15000,"Milo Dinosaur🦖": 16000])
     ]
-    var shoppingCart = ShoppingCart()
+    var shoppingCart = ShoppingCart() // merepresentasikan keranjang belanjaan, awalnya kosong.
     var userinput:String = ""
    
+    // function untuk menampilkan halaman utama m/ main menu
     func showMainScreen() {
         print("Welcome to UC-Walk Foodcourt👨🏻‍🍳👨🏻‍🍳")
         print("Please choose cafeteria:")
         for (index, cafeteria) in cafeterias.enumerated() {
             print("[\(index + 1)] \(cafeteria.name)")
         }
+        print("-")
         print("[S] Shopping Cart")
         print("[Q] Quit")
         print("Your Choice?", terminator: " ")
@@ -38,6 +41,7 @@ class Main {
         case "S":
             showShoppingCart()
         default:
+//    memilih kafetaria yang ingin dilihat menu makanannya, dan akan menampilkan menu kafetaria tersebut jika input pengguna    valid.
             if let index = Int(input), index > 0, index <= cafeterias.count {
                 let cafeteria = cafeterias[index - 1]
                 showCafeteriaMenu(cafeteria: cafeteria)
@@ -47,9 +51,9 @@ class Main {
             }
         }
     }
-    
+    //menampilkan isi keranjang belanja dan memberikan beberapa opsi untuk melanjutkan proses belanja atau keluar dari program.
     func showShoppingCart() {
-        if shoppingCart.items.isEmpty {
+        if shoppingCart.items.isEmpty { // mengecek apakah array items pada objek shoppingCart kosong atau tidak. Jika benar, maka blok kode di dalamnya akan dieksekusi.
             print("Your shopping cart is empty")
             print("""
                   Press [B] to go back
@@ -64,18 +68,18 @@ class Main {
                 showShoppingCart()
             }
         } else {
-            // Create a dictionary to store items grouped by restaurant
+            // membuat sebuah kamus (dictionary) untuk menyimpan barang-barang yang dikelompokkan berdasarkan restoran.
             var restaurantDict = [String: [CartItem]]()
-            for item in shoppingCart.items {
+            for item in shoppingCart.items { // mengelompokkan barang-barang dalam shoppingCart berdasarkan restoran.
                 if restaurantDict[item.restaurant] == nil {
                     restaurantDict[item.restaurant] = [item]
                 } else {
-                    restaurantDict[item.restaurant]?.append(item)
+                    restaurantDict[item.restaurant]?.append(item) // menambahkan item ke dalam array nilai kunci yang sesuai dalam kamus restaurantDict
                 }
             }
             
             print("Shopping Cart:")
-            // Loop through each restaurant and print its items
+            // melakukan perulangan untuk setiap restoran dan cetak barang-barang (items) yang dimilikinya.
             for (restaurant, items) in restaurantDict {
                 print("Your order from \(restaurant):")
                 for item in items {
@@ -105,13 +109,13 @@ class Main {
         }
     }
 
-    
+    // menampilkan daftar menu dari suatu kafetaria dan meminta pengguna untuk memilih menu yang ingin dipesan.
     func showCafeteriaMenu(cafeteria: Cafeteria) {
         print("""
         \nHi, Welcome to \(cafeteria.name)!
         What would you like to order?
         """)
-
+        // menampilkan setiap item pada menu kantin beserta nomor urutannya
         for (index, menu) in cafeteria.menu.enumerated() {
             let menuItem = menu.key
             print("[\(index+1)] \(menuItem)")
@@ -121,22 +125,22 @@ class Main {
         [B] Back to Main Screen
         Your Choice?
         """, terminator: " ")
-
+        //Input pengguna akan di-parse sebagai bilangan bulat, dan program akan kembali ke menu utama jika input tidak valid atau jika pengguna memilih opsi kembali.
         guard let userInput = readLine(), let menuItemIndex = Int(userInput.trimmingCharacters(in: .whitespaces)), menuItemIndex != 0 else {
             showMainScreen()
             return
         }
-
+        //memeriksa apakah indeks yang dimasukkan oleh pengguna valid atau tidak.
         guard menuItemIndex <= cafeteria.menu.count else {
             print("Invalid input")
             showCafeteriaMenu(cafeteria: cafeteria)
             return
         }
-
+        // mengambil nilai kunci dan nilai dari dictionary yang dipilih oleh pengguna menggunakan menuItemIndex
         let menuItem = Array(cafeteria.menu.keys)[menuItemIndex - 1]
         let itemPrice = Array(cafeteria.menu.values)[menuItemIndex - 1]
         print("\n\(menuItem) @ \(itemPrice)")
-
+        //dan kemudian membuat objek CartItem baru dengan detail item yang dipilih dan menambahkannya ke keranjang belanja dengan memanggil shoppingCart.addItem()
         let orderItem = CartItem(menuItem: menuItem, itemPrice: itemPrice, totalbeli: 1, restaurant: cafeteria.name)
         let order = Order(cafeteria: cafeteria, cartItem: orderItem)
         let orderScreen = order.orderScreen()
@@ -146,19 +150,21 @@ class Main {
     }
 
     
-    // function to checkout
+    // melakukan checkout pada keranjang belanja.
     func checkout() {
+        //memeriksa apakah keranjang belanja memiliki item. Jika tidak, maka akan mencetak pesan "Your shopping cart is empty" dan kembali ke layar utama.
         guard shoppingCart.items.count > 0 else {
             print("Your shopping cart is empty")
             showMainScreen()
             return
         }
-
+        //Jika ada item di keranjang belanja, fungsi akan mencetak daftar item dan harga.
         print("Checkout:")
         for item in shoppingCart.items {
             print("\(item.menuItem): Rp.\(item.itemPrice)")
         }
         repeat {
+            //memasukkan jumlah pembayaran atau memilih kembali ke layar utama.
             print("Enter payment amount or [B] to back:", terminator: " ")
             guard let input = readLine()?.uppercased() else {
                 print("Invalid input")
@@ -209,5 +215,6 @@ class Main {
         shoppingCart.items.removeAll()
     }
 }
+//memanggil fungsi showMainScreen() yang terdapat di kelas Main, yang kemudian menampilkan tampilan utama program
 let main = Main()
 main.showMainScreen()

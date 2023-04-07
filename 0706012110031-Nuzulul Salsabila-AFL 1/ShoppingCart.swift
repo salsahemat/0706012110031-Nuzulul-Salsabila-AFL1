@@ -7,6 +7,7 @@
 
 import Foundation
 
+//blueprint (template) untuk sebuah tipe data yang memiliki satu method calculateTotal() yang mengembalikan nilai bertipe Int.
 protocol Checkout {
     func calculateTotal() -> Int
 }
@@ -18,13 +19,13 @@ class ShoppingCart: Checkout {
     func addItem(item: CartItem) {
         items.append(item)
     }
-    
+    // menghapus item dari keranjang belanja berdasarkan CartItem yang diinput.
     func removeItem(item: CartItem) {
         if let index = items.firstIndex(where: { $0.menuItem == item.menuItem }) {
             items.remove(at: index)
         }
     }
-    
+    //menghitung total harga dari seluruh item yang ada di dalam keranjang belanja (items) pada kelas ShoppingCart.
     func calculateTotal() -> Int {
         var total = 0
         for item in items {

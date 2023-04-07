@@ -6,6 +6,7 @@
 //
 import Foundation
 
+//memodelkan sebuah kantin (cafeteria) yang memiliki nama dan daftar menu makanan yang disajikan di dalamnya.
 struct Cafeteria {
     var name: String
     var menu: [String: Int]
