@@ -102,7 +102,7 @@ class Main {
                 checkout()
             case "c":
                 emptyCart()
-                showMainScreen()
+                showShoppingCart()
             default:
                 showShoppingCart()
             }
@@ -160,9 +160,14 @@ class Main {
         }
         //Jika ada item di keranjang belanja, fungsi akan mencetak daftar item dan harga.
         print("Checkout:")
+        var total = 0
         for item in shoppingCart.items {
-            print("\(item.menuItem): Rp.\(item.itemPrice)")
+            let subtotal = item.calculatePrice()
+            print("\(item.menuItem): Rp.\(subtotal)")
+            total += subtotal
         }
+        print("Total: Rp.\(total)")
+
         repeat {
             //memasukkan jumlah pembayaran atau memilih kembali ke layar utama.
             print("Enter payment amount or [B] to back:", terminator: " ")
